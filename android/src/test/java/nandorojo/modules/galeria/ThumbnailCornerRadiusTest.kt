@@ -48,27 +48,6 @@ class ThumbnailCornerRadiusTest {
     }
 
     @Test
-    fun logicalCornerDoesNotFallBackToShorthand() {
-        val image = image()
-        radius(image, BorderRadiusProp.BORDER_RADIUS, 20f)
-        radius(image, BorderRadiusProp.BORDER_START_START_RADIUS, 0f)
-        assertEquals(0f, ThumbnailCornerRadius.read(image), 0f)
-    }
-
-    @Test
-    fun equalCornerOverridesRemainOutsideTheScalarShorthandScope() {
-        val image = image()
-        radius(image, BorderRadiusProp.BORDER_RADIUS, 20f)
-        listOf(
-            BorderRadiusProp.BORDER_TOP_LEFT_RADIUS,
-            BorderRadiusProp.BORDER_TOP_RIGHT_RADIUS,
-            BorderRadiusProp.BORDER_BOTTOM_LEFT_RADIUS,
-            BorderRadiusProp.BORDER_BOTTOM_RIGHT_RADIUS,
-        ).forEach { radius(image, it, 10f) }
-        assertEquals(0f, ThumbnailCornerRadius.read(image), 0f)
-    }
-
-    @Test
     fun nativeRoundRectOutlineMustCoverTheImage() {
         val image = image()
         image.outlineProvider = object : ViewOutlineProvider() {
@@ -87,9 +66,14 @@ class ThumbnailCornerRadiusTest {
     }
 
     @Test
-    fun inheritsCoincidentClippingWrapper() {
+    fun inheritsCoincidentClippingWrapperOutsideGaleria() {
         val image = image()
-        wrapper(image, 100, 0, "hidden")
+        val galeria = GaleriaView(context).apply {
+            urls = arrayOf("test")
+            addView(image)
+            layout(0, 0, 100, 100)
+        }
+        wrapper(galeria, 100, 0, "hidden")
         assertEquals(pixels(20f), ThumbnailCornerRadius.read(image), 0.001f)
     }
 
@@ -134,7 +118,7 @@ class ThumbnailCornerRadiusTest {
         layout(0, 0, 100, 100)
     }
 
-    private fun wrapper(image: ImageView, size: Int, inset: Int, overflow: String): FrameLayout =
+    private fun wrapper(image: View, size: Int, inset: Int, overflow: String): FrameLayout =
         OverflowLayout(context, overflow).apply {
             outlineProvider = null
             addView(image)

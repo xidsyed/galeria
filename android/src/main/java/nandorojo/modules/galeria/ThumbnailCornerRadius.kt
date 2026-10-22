@@ -44,7 +44,6 @@ internal object ThumbnailCornerRadius {
                 radius = max(radius, uniformRadius(current) ?: return 0f)
             }
 
-            if (current is GaleriaView) break
             val parent = current.parent as? View ?: break
             left += current.left - parent.scrollX
             top += current.top - parent.scrollY
